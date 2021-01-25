@@ -1,0 +1,46 @@
+### CREATE GAME
+POST http://localhost:8080/game
+Accept: application/json
+
+> {%
+    client.global.set("invitation_url", response.body.invitationUrl.toString());
+    client.global.set("game_id", response.body.invitationUrl.split("/")[2])
+    client.global.set("player1_auth_token", response.headers.valueOf("Set-Auth-Token"))
+%}
+
+### JOIN GAME
+POST {{invitation_url}}
+Accept: application/json
+
+> {%
+    client.global.set("player2_auth_token", response.headers.valueOf("Set-Auth-Token"))
+%}
+
+### SHOT (player1)
+PUT http://localhost:8080/game/{{game_id}}
+Content-Type: application/json
+Auth-Token: {{player1_auth_token}}
+
+{
+"position": "C1"
+}
+
+### SHOT (player2)
+PUT http://localhost:8080/game/{{game_id}}
+Content-Type: application/json
+Auth-Token: {{player2_auth_token}}
+
+{
+"position": "G1"
+}
+
+### GAME STATUS (player1)
+GET http://localhost:8080/game/{{game_id}}
+Content-Type: application/json
+Auth-Token: {{player1_auth_token}}
+
+
+### GAME STATUS (player2)
+GET http://localhost:8080/game/{{game_id}}
+Content-Type: application/json
+Auth-Token: {{player2_auth_token}}
